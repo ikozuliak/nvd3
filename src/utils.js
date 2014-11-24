@@ -67,6 +67,16 @@ nv.utils.getColor = function(color) {
     }
 };
 
+nv.utils.getColor = function(color) {
+    if (!arguments.length) return nv.utils.defaultColor(); //if you pass in nothing, get default colors back
+
+    if( Object.prototype.toString.call( color ) === '[object Array]' )
+        return function(d, i) { return d.color || color[i % color.length]; };
+    else
+        return color;
+    //can't really help it if someone passes rubbish as color
+}
+
 
 /*
 Default color chooser uses the index of an object as before.

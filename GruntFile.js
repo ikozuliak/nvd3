@@ -8,25 +8,47 @@ module.exports = function(grunt) {
         pkg: grunt.file.readJSON('package.json'),
         concat: {
             options: {
-                separator: '',
+                separator: ''
                 // wrap output in a function block.
-                banner: '/* nvd3 version ' + version + '(https://github.com/liquidpele/nvd3) ' +
-                    '<%= grunt.template.today("yyyy-mm-dd") %> */\n' + '(function(){\n',
-                footer: '\nnv.version = "' + version + '";\n})();'
+                //banner: '/* nvd3 version ' + version + '(https://github.com/liquidpele/nvd3) ' +
+                //    '<%= grunt.template.today("yyyy-mm-dd") %> */\n',
+                //footer: '\nnv.version = "' + version + '";\n'
             },
             dist: {
                 src: [
+                    'src/intro.js',
+
                     'src/core.js',
                     'src/interactiveLayer.js',
                     'src/tooltip.js',
                     'src/utils.js',
+
+                    //Include only needed files
+                    'src/models/axis.js',
+                    'src/models/pie.js',
+                    'src/models/distribution.js',
+                    'src/models/legend.js',
+                    'src/models/line.js',
+                    'src/models/scatter.js',
+                    'src/models/sparkline.js',
+
+                    'src/models/doublePie.js',
+                    'src/models/lineChart.js',
+                    'src/models/multiBar.js',
+                    'src/models/multiBarChart.js',
+                    'src/models/scatterChart.js',
+                    'src/models/scatterSectorsChart.js',
+                    'src/models/doublePie.js',
+
                     //Include all files in src/models, excluding some charts
                     //that are no longer supported.
-                    'src/models/*.js',
-                    '!src/models/lineWithFisheye*',
-                    '!src/models/parallelCoordinates*',
-                    '!src/models/multiBarTime*'
-                     ],
+                    //'src/models/*.js',
+                    //'!src/models/lineWithFisheye*',
+                    //'!src/models/parallelCoordinates*',
+                    //'!src/models/multiBarTime*'
+
+                    'src/outro.js',
+                ],
                 dest: 'build/nv.d3.js'
             }
         },

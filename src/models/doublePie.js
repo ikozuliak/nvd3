@@ -168,9 +168,9 @@ nv.models.doublePie = function () {
 
       function renderOuter() {
 
-        var pieWrap = g.select('.nv-pieWrap').datum([data]);
-
         gEnter.append('g').attr('class', 'nv-pieWrap');
+
+        var pieWrap = g.select('.nv-pieWrap').datum([data]);
 
         labels.append('path').attr('class', 'nv-arcPathOuter');
         labels.append('line').attr('class', 'nv-arcLineOuter');
@@ -209,14 +209,15 @@ nv.models.doublePie = function () {
             return d.values[0];
           });
 
+
         d3.transition(pieWrap).call(pie);
       }
 
       function renderInner(){
 
-        var pieWrapInner = g.select('.nv-pieWrapInner').datum([data]);
-
         gEnter.append('g').attr('class', 'nv-pieWrapInner');
+
+        var pieWrapInner = g.select('.nv-pieWrapInner').datum([data]);
 
         labels.append('path').attr('class', 'nv-arcPathInner');
         labels.append('line').attr('class', 'nv-arcLineInner');

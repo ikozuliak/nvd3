@@ -206,15 +206,16 @@ nv.models.multiBarChart = function() {
                     .datum(data)
                     .call(legend);
 
-                if ( margin.top != legend.height()) {
-                    margin.top = legend.height();
-                    availableHeight = (height || parseInt(container.style('height')) || 400)
-                        - margin.top - margin.bottom;
-                }
+                margin.bottom = legend.height() + 30;
+                availableHeight = (height || parseInt(container.style('height')) || 400)
+                - margin.top - margin.bottom;
 
-                g.select('.nv-legendWrap')
-                    .attr('transform', 'translate(' + controlWidth() + ',' + (-margin.top) +')');
+                wrap.select('.nv-legendWrap')
+                  .attr('transform', 'translate(0,' + (parseInt(container.style('height')) - legend.height() - margin.top ) +')')
+
             }
+
+
 
             //------------------------------------------------------------
 

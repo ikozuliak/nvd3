@@ -22,6 +22,7 @@ nv.models.lineChart = function() {
         , rightAlignYAxis = false
         , useInteractiveGuideline = false
         , tooltips = true
+        , tooltipWidth = 210
         , tooltip = function(key, x, y, e, graph) {
             return '<h3>' + key + '</h3>' +
                 '<p>' +  y + ' at ' + x + '</p>'
@@ -57,7 +58,9 @@ nv.models.lineChart = function() {
             y = yAxis.tickFormat()(lines.y()(e.point, e.pointIndex)),
             content = tooltip(e.series.key, x, y, e, chart);
 
-        nv.tooltip.show([left, top], content, null, null, offsetElement);
+        var gravity = (offsetElement.clientWidth - left) < tooltipWidth ? 'e' : 'w'
+
+        nv.tooltip.show([left, top], content, gravity, null, offsetElement, 'nvtooltip-' + gravity);
     };
 
     var renderWatch = nv.utils.renderWatch(dispatch, duration);
@@ -183,16 +186,14 @@ nv.models.lineChart = function() {
 
                 g.select('.nv-legendWrap')
                     .datum(data)
-                    .call(legend);
+                    .call(legend)
 
-                if ( margin.top != legend.height()) {
-                    margin.top = legend.height();
-                    availableHeight = (height || parseInt(container.style('height')) || 400)
-                        - margin.top - margin.bottom;
-                }
+                margin.bottom = legend.height() + 30;
+                availableHeight = (height || parseInt(container.style('height')) || 400)
+                    - margin.top - margin.bottom;
 
                 wrap.select('.nv-legendWrap')
-                    .attr('transform', 'translate(0,' + (-margin.top) +')')
+                    .attr('transform', 'translate(0,' + (parseInt(container.style('height')) - legend.height() - margin.top ) +')')
             }
 
             //------------------------------------------------------------
@@ -417,7 +418,7 @@ nv.models.lineChart = function() {
     chart.state = state;
 
     d3.rebind(chart, lines, 'defined', 'isArea', 'x', 'y', 'size', 'xScale', 'yScale', 'xDomain', 'yDomain', 'xRange', 'yRange'
-        , 'forceX', 'forceY', 'interactive', 'clipEdge', 'clipVoronoi', 'useVoronoi','id', 'interpolate');
+        , 'forceX', 'forceY', 'interactive', 'clipEdge', 'clipVoronoi', 'useVoronoi','id', 'interpolate', 'tooltipWidth');
 
     chart.options = nv.utils.optionsFunc.bind(chart);
 
@@ -519,6 +520,13 @@ nv.models.lineChart = function() {
         noData = _;
         return chart;
     };
+
+    chart.tooltipWidth = function(_) {
+        if (!arguments.length) return tooltipWidth;
+        tooltipWidth = _;
+        return chart;
+    };
+
 
     chart.transitionDuration = function(_) {
         nv.deprecated('lineChart.transitionDuration');

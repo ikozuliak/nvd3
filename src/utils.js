@@ -55,15 +55,22 @@ nv.utils.windowResize = function(handler) {
 /*
 Backwards compatible way to implement more d3-like coloring of graphs.
 If passed an array, wrap it in a function which implements the old behavior
+Else return what was passed in
 */
 nv.utils.getColor = function(color) {
-    //if you pass in nothing or not an array, get default colors back
-    if (!arguments.length || !(color instanceof Array)) {
+    //if you pass in nothing, get default colors back
+    if (!arguments.length) {
         return nv.utils.defaultColor();
+
+    //if passed an array, wrap it in a function
+    } else if(color instanceof Array) {
+        return function(d, i) { return d.color || color[i % color.length]; };
+
+    //if passed a function, return the function, or whatever it may be
+    //external libs, such as angularjs-nvd3-directives use this
     } else {
-        return function (d, i) {
-            return d.color || color[i % color.length];
-        };
+        //can't really help it if someone passes rubbish as color
+        return color;
     }
 };
 
@@ -437,11 +444,16 @@ option objects should be generated via Object.create() to provide
 the option of manipulating data via get/set functions.
 */
 nv.utils.initOption = function(chart, name) {
-    chart[name] = function (_) {
-        if (!arguments.length) return chart._options[name];
-        chart._options[name] = _;
-        return chart;
-    };
+    // if it's a call option, just call it directly, otherwise do get/set
+    if (chart._calls && chart._calls[name]) {
+        chart[name] = chart._calls[name];
+    } else {
+        chart[name] = function (_) {
+            if (!arguments.length) return chart._options[name];
+            chart._options[name] = _;
+            return chart;
+        };
+    }
 };
 
 
@@ -449,7 +461,9 @@ nv.utils.initOption = function(chart, name) {
 Add all options in an options object to the chart
 */
 nv.utils.initOptions = function(chart) {
-    var ops = Object.getOwnPropertyNames(chart._options);
+    var ops = Object.getOwnPropertyNames(chart._options || {});
+    var calls = Object.getOwnPropertyNames(chart._calls || {});
+    ops = ops.concat(calls);
     for (var i in ops) {
         nv.utils.initOption(chart, ops[i]);
     }
@@ -457,14 +471,84 @@ nv.utils.initOptions = function(chart) {
 
 
 /*
+Inherit options from a D3 object
+d3.rebind makes calling the function on target actually call it on source
+Also use _d3options so we can track what we inherit for documentation and chained inheritance
+*/
+nv.utils.inheritOptionsD3 = function(target, d3_source, oplist) {
+    target._d3options = oplist.concat(target._d3options || []);
+    oplist.unshift(d3_source);
+    oplist.unshift(target);
+    d3.rebind.apply(this, oplist);
+};
+
+
+/*
+Remove duplicates from an array
+*/
+nv.utils.arrayUnique = function(a) {
+    return a.sort().filter(function(item, pos) {
+        return !pos || item != a[pos - 1];
+    });
+};
+
+
+/*
+Keeps a list of custom symbols to draw from in addition to d3.svg.symbol
+Necessary since d3 doesn't let you extend its list -_-
+Add new symbols by doing nv.utils.symbols.set('name', function(size){...});
+*/
+nv.utils.symbolMap = d3.map();
+
+
+/*
+Replaces d3.svg.symbol so that we can look both there and our own map
+ */
+nv.utils.symbol = function() {
+    var type,
+        size = 64;
+    function symbol(d,i) {
+        var t = type.call(this,d,i);
+        var s = size.call(this,d,i);
+        if (d3.svg.symbolTypes.indexOf(t) !== -1) {
+            return d3.svg.symbol().type(t).size(s)();
+        } else {
+            return nv.utils.symbolMap.get(t)(s);
+        }
+    }
+    symbol.type = function(_) {
+        if (!arguments.length) return type;
+        type = d3.functor(_);
+        return symbol;
+    };
+    symbol.size = function(_) {
+        if (!arguments.length) return size;
+        size = d3.functor(_);
+        return symbol;
+    };
+    return symbol;
+};
+
+
+/*
 Inherit option getter/setter functions from source to target
 d3.rebind makes calling the function on target actually call it on source
+Also track via _inherited and _d3options so we can track what we inherit
+for documentation generation purposes and chained inheritance
 */
 nv.utils.inheritOptions = function(target, source) {
-    var args = Object.getOwnPropertyNames(source._options);
+    // inherit all the things
+    var ops = Object.getOwnPropertyNames(source._options || {});
+    var calls = Object.getOwnPropertyNames(source._calls || {});
+    var inherited = source._inherited || [];
+    var d3ops = source._d3options || [];
+    var args = ops.concat(calls).concat(inherited).concat(d3ops);
     args.unshift(source);
     args.unshift(target);
     d3.rebind.apply(this, args);
+    // pass along the lists to keep track of them, don't allow duplicates
+    target._inherited = nv.utils.arrayUnique(ops.concat(calls).concat(inherited).concat(ops).concat(target._inherited || []));
+    target._d3options = nv.utils.arrayUnique(d3ops.concat(target._d3options || []));
 };
 
 

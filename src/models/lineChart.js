@@ -44,9 +44,6 @@ nv.models.lineChart = function() {
     ;
 
     //============================================================
-
-
-    //============================================================
     // Private Variables
     //------------------------------------------------------------
 
@@ -78,9 +75,6 @@ nv.models.lineChart = function() {
                 });
         }
     };
-
-    //============================================================
-
 
     function chart(selection) {
         renderWatch.reset();
@@ -125,9 +119,7 @@ nv.models.lineChart = function() {
                 }
             }
 
-            //------------------------------------------------------------
             // Display noData message if there's nothing to show.
-
             if (!data || !data.length || !data.filter(function(d) { return d.values.length }).length) {
                 var noDataText = container.selectAll('.nv-noData').data([noData]);
 
@@ -146,21 +138,12 @@ nv.models.lineChart = function() {
                 container.selectAll('.nv-noData').remove();
             }
 
-            //------------------------------------------------------------
 
-
-            //------------------------------------------------------------
             // Setup Scales
-
             x = lines.xScale();
             y = lines.yScale();
 
-            //------------------------------------------------------------
-
-
-            //------------------------------------------------------------
             // Setup containers and skeleton of chart
-
             var wrap = container.selectAll('g.nv-wrap.nv-lineChart').data([data]);
             var gEnter = wrap.enter().append('g').attr('class', 'nvd3 nv-wrap nv-lineChart').append('g');
             var g = wrap.select('g');
@@ -175,9 +158,8 @@ nv.models.lineChart = function() {
             g.select("rect")
                 .attr("width",availableWidth)
                 .attr("height",(availableHeight > 0) ? availableHeight : 0);
-            //------------------------------------------------------------
-            // Legend
 
+            // Legend
             if (showLegend) {
                 legend.width(availableWidth);
 
@@ -195,8 +177,6 @@ nv.models.lineChart = function() {
                     .attr('transform', 'translate(0,' + (-margin.top) +')')
             }
 
-            //------------------------------------------------------------
-
             wrap.attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
             if (rightAlignYAxis) {
@@ -204,11 +184,6 @@ nv.models.lineChart = function() {
                     .attr("transform", "translate(" + availableWidth + ",0)");
             }
 
-            //------------------------------------------------------------
-            // Main Chart Component(s)
-
-
-            //------------------------------------------------------------
             //Set up interactive layer
             if (useInteractiveGuideline) {
                 interactiveLayer
@@ -220,7 +195,6 @@ nv.models.lineChart = function() {
                 wrap.select(".nv-interactive").call(interactiveLayer);
             }
 
-
             lines
                 .width(availableWidth)
                 .height(availableHeight)
@@ -230,16 +204,11 @@ nv.models.lineChart = function() {
 
 
             var linesWrap = g.select('.nv-linesWrap')
-                .datum(data.filter(function(d) { return !d.disabled }))
+                .datum(data.filter(function(d) { return !d.disabled }));
 
             linesWrap.call(lines);
 
-            //------------------------------------------------------------
-
-
-            //------------------------------------------------------------
             // Setup Axes
-
             if (showXAxis) {
                 xAxis
                     .scale(x)
@@ -261,8 +230,6 @@ nv.models.lineChart = function() {
                 g.select('.nv-y.nv-axis')
                     .call(yAxis);
             }
-            //------------------------------------------------------------
-
 
             //============================================================
             // Event Handling/Dispatching (in chart's scope)
@@ -358,7 +325,6 @@ nv.models.lineChart = function() {
                 if (tooltips) showTooltip(e, that.parentNode);
             });
 
-
             dispatch.on('changeState', function(e) {
 
                 if (typeof e.disabled !== 'undefined' && data.length === e.disabled.length) {
@@ -372,14 +338,11 @@ nv.models.lineChart = function() {
                 chart.update();
             });
 
-            //============================================================
-
         });
 
         renderWatch.renderEnd('lineChart immediate');
         return chart;
     }
-
 
     //============================================================
     // Event Handling/Dispatching (out of chart's scope)
@@ -399,9 +362,6 @@ nv.models.lineChart = function() {
     });
 
     //============================================================
-
-
-    //============================================================
     // Expose Public Variables
     //------------------------------------------------------------
 
@@ -412,130 +372,56 @@ nv.models.lineChart = function() {
     chart.xAxis = xAxis;
     chart.yAxis = yAxis;
     chart.interactiveLayer = interactiveLayer;
-    // DO NOT DELETE. This is currently overridden below
-    // until deprecated portions are removed.
-    chart.state = state;
 
-    d3.rebind(chart, lines, 'defined', 'isArea', 'x', 'y', 'size', 'xScale', 'yScale', 'xDomain', 'yDomain', 'xRange', 'yRange'
-        , 'forceX', 'forceY', 'interactive', 'clipEdge', 'clipVoronoi', 'useVoronoi','id', 'interpolate');
-
+    chart.dispatch = dispatch;
     chart.options = nv.utils.optionsFunc.bind(chart);
 
-    chart.margin = function(_) {
-        if (!arguments.length) return margin;
-        margin.top    = typeof _.top    != 'undefined' ? _.top    : margin.top;
-        margin.right  = typeof _.right  != 'undefined' ? _.right  : margin.right;
-        margin.bottom = typeof _.bottom != 'undefined' ? _.bottom : margin.bottom;
-        margin.left   = typeof _.left   != 'undefined' ? _.left   : margin.left;
-        return chart;
-    };
+    chart._options = Object.create({}, {
+        // simple options, just get/set the necessary values
+        width:      {get: function(){return width;}, set: function(_){width=_;}},
+        height:     {get: function(){return height;}, set: function(_){height=_;}},
+        showLegend: {get: function(){return showLegend;}, set: function(_){showLegend=_;}},
+        showXAxis:      {get: function(){return showXAxis;}, set: function(_){showXAxis=_;}},
+        showYAxis:    {get: function(){return showYAxis;}, set: function(_){showYAxis=_;}},
+        tooltips:    {get: function(){return tooltips;}, set: function(_){tooltips=_;}},
+        tooltipContent:    {get: function(){return tooltip;}, set: function(_){tooltip=_;}},
+        defaultState:    {get: function(){return defaultState;}, set: function(_){defaultState=_;}},
+        noData:    {get: function(){return noData;}, set: function(_){noData=_;}},
 
-    chart.width = function(_) {
-        if (!arguments.length) return width;
-        width = _;
-        return chart;
-    };
+        // options that require extra logic in the setter
+        margin: {get: function(){return margin;}, set: function(_){
+            margin.top    = _.top    !== undefined ? _.top    : margin.top;
+            margin.right  = _.right  !== undefined ? _.right  : margin.right;
+            margin.bottom = _.bottom !== undefined ? _.bottom : margin.bottom;
+            margin.left   = _.left   !== undefined ? _.left   : margin.left;
+        }},
+        duration: {get: function(){return duration;}, set: function(_){
+            duration = _;
+            renderWatch.reset(duration);
+            lines.duration(duration);
+            xAxis.duration(duration);
+            yAxis.duration(duration);
+        }},
+        color:  {get: function(){return color;}, set: function(_){
+            color = nv.utils.getColor(_);
+            legend.color(color);
+            lines.color(color);
+        }},
+        rightAlignYAxis: {get: function(){return rightAlignYAxis;}, set: function(_){
+            rightAlignYAxis = _;
+            yAxis.orient( rightAlignYAxis ? 'right' : 'left');
+        }},
+        useInteractiveGuideline: {get: function(){return useInteractiveGuideline;}, set: function(_){
+            useInteractiveGuideline = _;
+            if (useInteractiveGuideline) {
+                lines.interactive(false);
+                lines.useVoronoi(false);
+            }
+        }}
+    });
 
-    chart.height = function(_) {
-        if (!arguments.length) return height;
-        height = _;
-        return chart;
-    };
-
-    chart.color = function(_) {
-        if (!arguments.length) return color;
-        color = nv.utils.getColor(_);
-        legend.color(color);
-        return chart;
-    };
-
-    chart.showLegend = function(_) {
-        if (!arguments.length) return showLegend;
-        showLegend = _;
-        return chart;
-    };
-
-    chart.showXAxis = function(_) {
-        if (!arguments.length) return showXAxis;
-        showXAxis = _;
-        return chart;
-    };
-
-    chart.showYAxis = function(_) {
-        if (!arguments.length) return showYAxis;
-        showYAxis = _;
-        return chart;
-    };
-
-    chart.rightAlignYAxis = function(_) {
-        if(!arguments.length) return rightAlignYAxis;
-        rightAlignYAxis = _;
-        yAxis.orient( (_) ? 'right' : 'left');
-        return chart;
-    };
-
-    chart.useInteractiveGuideline = function(_) {
-        if(!arguments.length) return useInteractiveGuideline;
-        useInteractiveGuideline = _;
-        if (_ === true) {
-            chart.interactive(false);
-            chart.useVoronoi(false);
-        }
-        return chart;
-    };
-
-    chart.tooltips = function(_) {
-        if (!arguments.length) return tooltips;
-        tooltips = _;
-        return chart;
-    };
-
-    chart.tooltipContent = function(_) {
-        if (!arguments.length) return tooltip;
-        tooltip = _;
-        return chart;
-    };
-
-    // DEPRECATED
-    chart.state = function(_) {
-        nv.deprecated('lineChart.state');
-        if (!arguments.length) return state;
-        state = _;
-        return chart;
-    };
-    for (var key in state) {
-        chart.state[key] = state[key];
-    }
-    // END DEPRECATED
-
-    chart.defaultState = function(_) {
-        if (!arguments.length) return defaultState;
-        defaultState = _;
-        return chart;
-    };
-
-    chart.noData = function(_) {
-        if (!arguments.length) return noData;
-        noData = _;
-        return chart;
-    };
-
-    chart.transitionDuration = function(_) {
-        nv.deprecated('lineChart.transitionDuration');
-        return chart.duration(_);
-    };
-
-    chart.duration = function(_) {
-        if (!arguments.length) return duration;
-        duration = _;
-        renderWatch.reset(duration);
-        lines.duration(duration);
-        xAxis.duration(duration);
-        yAxis.duration(duration);
-        return chart;
-    };
-
-    //============================================================
+    nv.utils.inheritOptions(chart, lines);
+    nv.utils.initOptions(chart);
 
     return chart;
 };

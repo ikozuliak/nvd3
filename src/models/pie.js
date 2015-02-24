@@ -25,7 +25,9 @@ nv.models.pie = function() {
         , titleOffset = 0
         , labelSunbeamLayout = false
         , startAngle = false
+        , padAngle = false
         , endAngle = false
+        , cornerRadius = 0
         , donutRatio = 0.5
         , duration = 250
         , dispatch = d3.dispatch('chartClick', 'elementClick', 'elementDblClick', 'elementMouseover', 'elementMouseout', 'renderEnd')
@@ -93,6 +95,16 @@ nv.models.pie = function() {
                 .sort(null)
                 .value(function(d) { return d.disabled ? 0 : getY(d) });
 
+            // padAngle added in d3 3.5
+            if (pie.padAngle && padAngle) {
+                pie.padAngle(padAngle);
+            }
+
+            if (arc.cornerRadius && cornerRadius) {
+                arc.cornerRadius(cornerRadius);
+                arcOver.cornerRadius(cornerRadius);
+            }
+
             // if title is specified and donut, put it in the middle
             if (donut && title) {
                 var title_g = g_pie.append('g').attr('class', 'nv-pie');
@@ -149,7 +161,15 @@ nv.models.pie = function() {
                     id: id
                 });
             });
-            ae.on('click', function(d,i) {
+
+            slices.attr('fill', function(d,i) { return color(d, i); })
+            slices.attr('stroke', function(d,i) { return color(d, i); });
+
+            var paths = ae.append('path').each(function(d) {
+                this._current = d;
+            });
+
+            paths.on('click', function(d,i) {
                 dispatch.elementClick({
                     label: getX(d.data),
                     value: getY(d.data),
@@ -160,7 +180,7 @@ nv.models.pie = function() {
                 });
                 d3.event.stopPropagation();
             });
-            ae.on('dblclick', function(d,i) {
+            paths.on('dblclick', function(d,i) {
                 dispatch.elementDblClick({
                     label: getX(d.data),
                     value: getY(d.data),
@@ -171,14 +191,6 @@ nv.models.pie = function() {
                 });
                 d3.event.stopPropagation();
             });
-
-            slices.attr('fill', function(d,i) { return color(d, i); })
-            slices.attr('stroke', function(d,i) { return color(d, i); });
-
-            var paths = ae.append('path').each(function(d) {
-                this._current = d;
-            });
-
             slices.select('path')
                 .transition()
                 .attr('d', arc)
@@ -326,7 +338,9 @@ nv.models.pie = function() {
         id:         {get: function(){return id;}, set: function(_){id=_;}},
         endAngle:   {get: function(){return endAngle;}, set: function(_){endAngle=_;}},
         startAngle: {get: function(){return startAngle;}, set: function(_){startAngle=_;}},
-        donutRatio: {get: function(){return donutRatio;}, set: function(_){donutRatio=_;}},
+        padAngle:   {get: function(){return padAngle;}, set: function(_){padAngle=_;}},
+        cornerRadius: {get: function(){return cornerRadius;}, set: function(_){cornerRadius=_;}},
+        donutRatio:   {get: function(){return donutRatio;}, set: function(_){donutRatio=_;}},
         pieLabelsOutside:   {get: function(){return pieLabelsOutside;}, set: function(_){pieLabelsOutside=_;}},
         donutLabelsOutside: {get: function(){return donutLabelsOutside;}, set: function(_){donutLabelsOutside=_;}},
         labelSunbeamLayout: {get: function(){return labelSunbeamLayout;}, set: function(_){labelSunbeamLayout=_;}},

@@ -1,5 +1,5 @@
 
-var version = '1.6.0';
+var version = '1.7.1';
 
 module.exports = function(grunt) {
 
@@ -10,7 +10,7 @@ module.exports = function(grunt) {
             options: {
                 separator: '',
                 // wrap output in a function block.
-                banner: '/* nvd3 version ' + version + '(https://github.com/liquidpele/nvd3) ' +
+                banner: '/* nvd3 version ' + version + '(https://github.com/novus/nvd3) ' +
                     '<%= grunt.template.today("yyyy-mm-dd") %> */\n' + '(function(){\n',
                 footer: '\nnv.version = "' + version + '";\n})();'
             },
@@ -20,19 +20,16 @@ module.exports = function(grunt) {
                     'src/interactiveLayer.js',
                     'src/tooltip.js',
                     'src/utils.js',
-                    //Include all files in src/models, excluding some charts
-                    //that are no longer supported.
-                    'src/models/*.js',
-                    '!src/models/lineWithFisheye*',
-                    '!src/models/parallelCoordinates*',
-                    '!src/models/multiBarTime*'
+                    //Include all files in src/models
+                    'src/models/*.js'
+                    // example to exclude files: '!src/models/excludeMe*'
                      ],
                 dest: 'build/nv.d3.js'
             }
         },
         uglify: {
             options: {
-                banner: '/* nvd3 version ' + version + ' (https://github.com/liquidpele/nvd3) ' +
+                banner: '/* nvd3 version ' + version + ' (https://github.com/novus/nvd3) ' +
                     '<%= grunt.template.today("yyyy-mm-dd") %> */\n'
             },
             js: {
@@ -73,7 +70,7 @@ module.exports = function(grunt) {
             unit: {
                 options: {
                     logLevel: 'ERROR',
-                    browsers: ['Chrome'],
+                    browsers: ['Firefox'],
                     frameworks: [ 'mocha', 'sinon-chai' ],
                     reporters: [ 'spec', 'junit', 'coverage'],
                     singleRun: true,
@@ -83,7 +80,7 @@ module.exports = function(grunt) {
                         'test/mocha/*.coffee': ['coffee']
                     },
                     files: [
-                        'lib/d3.v3.js',
+                        'bower_components/d3/d3.js',
                         'src/*.js',
                         'src/models/*.js',
                         'test/mocha/*.coffee'

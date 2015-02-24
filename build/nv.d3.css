@@ -1,3 +1,20 @@
+/********************
+ * SVG CSS
+ */
+
+
+svg {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  /* Trying to get SVG to act like a greedy block in all browsers */
+  display: block;
+  width:100%;
+  height:100%;
+}
 
 /********************
   Default CSS for an svg element nvd3 used
@@ -142,6 +159,10 @@ svg.nvd3-svg {
   font: normal 12px Arial;
 }
 
+.nvd3 .title {
+ font: bold 14px Arial;
+}
+
 .nvd3 .nv-background {
   fill: white;
   fill-opacity: 0;
@@ -171,7 +192,7 @@ svg.nvd3-svg {
   cursor: pointer;
 }
 
-.nvd3 .nv-legend .disabled circle {
+.nvd3 .nv-legend .nv-disabled circle {
   fill-opacity: 0;
 }
 
@@ -179,6 +200,15 @@ svg.nvd3-svg {
 /**********
 *  Axes
 */
+
+.axis {
+  opacity: 1;
+}
+
+.axis.nv-disabled {
+  opacity: 0;
+}
+
 .nvd3 .nv-axis {
   pointer-events:none;
 }
@@ -535,19 +565,19 @@ svg.nvd3-svg {
 */
 
 .nvd3.nv-ohlcBar .nv-ticks .nv-tick {
-  stroke-width: 2px;
+  stroke-width: 1px;
 }
 
 .nvd3.nv-ohlcBar .nv-ticks .nv-tick.hover {
-  stroke-width: 4px;
+  stroke-width: 2px;
 }
 
 .nvd3.nv-ohlcBar .nv-ticks .nv-tick.positive {
- stroke: #2ca02c;
+    stroke: #2ca02c;
 }
 
 .nvd3.nv-ohlcBar .nv-ticks .nv-tick.negative {
- stroke: #d62728;
+    stroke: #d62728;
 }
 
 .nvd3.nv-historicalStockChart .nv-axis .nv-axislabel {
@@ -578,14 +608,13 @@ svg.nvd3-svg {
 
 .nvd3 .background path {
   fill: none;
-  stroke: #ccc;
+  stroke: #EEE;
   stroke-opacity: .4;
   shape-rendering: crispEdges;
 }
 
 .nvd3 .foreground path {
   fill: none;
-  stroke: steelblue;
   stroke-opacity: .7;
 }
 

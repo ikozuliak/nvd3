@@ -74,6 +74,7 @@
         //By default, the tooltip model renders a beautiful table inside a DIV.
         //You can override this function if a custom tooltip is desired.
         var contentGenerator = function(d) {
+
             if (d === null) {
                 return '';
             }

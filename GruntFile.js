@@ -19,22 +19,26 @@ module.exports = function(grunt) {
             },
             js: {
                 options: {
-                    separator: '',
-                    banner: '/* nvd3 version ' + _pkg.version + ' (' + _pkg.url + ') ' +
-                        '<%= grunt.template.today("yyyy-mm-dd") %> */\n' + '(function(){\n',
-                    footer: '\nnv.version = "' + _pkg.version + '";\n})();'
+                    //separator: '',
+                    //banner: '/* nvd3 version ' + _pkg.version + ' (' + _pkg.url + ') ' +
+                    //    '<%= grunt.template.today("yyyy-mm-dd") %> */\n' + '(function(){\n',
+                    //footer: '\nnv.version = "' + _pkg.version + '";\n})();'
                 },
                 src: [
+                    'src/intro.js',
+
                     'src/core.js',
                     'src/dom.js',
                     'src/interactiveLayer.js',
                     'src/tooltip.js',
                     'src/utils.js',
                     //Include all files in src/models
-                    'src/models/*.js'
+                    'src/models/*.js',
+
+                    'src/outro.js'
                     // example to exclude files: '!src/models/excludeMe*'
                      ],
-                dest: 'build/nv.d3.js'
+                dest: '../pee/vendor/assets/javascripts/nvd3.js'
             }
         },
         uglify: {
@@ -92,7 +96,7 @@ module.exports = function(grunt) {
             unit: {
                 options: {
                     logLevel: 'ERROR',
-                    browsers: ['Firefox'],
+                    browsers: ['Chrome'],
                     frameworks: [ 'mocha', 'sinon-chai' ],
                     reporters: [ 'spec', 'junit', 'coverage'],
                     singleRun: true,

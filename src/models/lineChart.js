@@ -141,13 +141,15 @@ nv.models.lineChart = function() {
                     .datum(data)
                     .call(legend);
 
-                if ( margin.top != legend.height()) {
-                    margin.top = legend.height();
+
+                if ( margin.bottom != legend.height()) {
+                    margin.bottom = legend.height() + 40;
                     availableHeight = nv.utils.availableHeight(height, container, margin);
                 }
 
                 wrap.select('.nv-legendWrap')
-                    .attr('transform', 'translate(0,' + (-margin.top) +')')
+                    .attr('transform', 'translate('+0+',' + (this.clientHeight - margin.bottom + 10 ) +')');
+
             }
 
             wrap.attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');

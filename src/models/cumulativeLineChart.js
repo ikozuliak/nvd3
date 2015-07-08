@@ -94,8 +94,8 @@ nv.models.cumulativeLineChart = function() {
             var container = d3.select(this);
             nv.utils.initSVG(container);
             container.classed('nv-chart-' + id, true);
-            var that = this;
 
+            var that = this;
             var availableWidth = nv.utils.availableWidth(width, container, margin),
                 availableHeight = nv.utils.availableHeight(height, container, margin);
 

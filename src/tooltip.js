@@ -29,20 +29,20 @@
         }
         */
         var data = null;
-        var gravity = 'w'   //Can be 'n','s','e','w'. Determines how tooltip is positioned.
-            ,   distance = 25   //Distance to offset tooltip from the mouse location.
+        var gravity = 'n'   //Can be 'n','s','e','w'. Determines how tooltip is positioned.
+            ,   distance = 0   //Distance to offset tooltip from the mouse location.
             ,   snapDistance = 0   //Tolerance allowed before tooltip is moved from its current position (creates 'snapping' effect)
             ,   fixedTop = null //If not null, this fixes the top position of the tooltip.
             ,   classes = null  //Attaches additional CSS classes to the tooltip DIV that is created.
             ,   chartContainer = null   //Parent dom element of the SVG that holds the chart.
             ,   hidden = true  // start off hidden, toggle with hide/show functions below
-            ,   hideDelay = 400  // delay before the tooltip hides after calling hide()
+            ,   hideDelay = 0  // delay before the tooltip hides after calling hide()
             ,   tooltip = null // d3 select of tooltipElem below
             ,   tooltipElem = null  //actual DOM element representing the tooltip.
             ,   position = {left: null, top: null}   //Relative position of the tooltip inside chartContainer.
             ,   offset = {left: 0, top: 0}   //Offset of tooltip against the pointer
             ,   enabled = true  //True -> tooltips are rendered. False -> don't render tooltips.
-            ,   duration = 100 // duration for tooltip movement
+            ,   duration = 0 // duration for tooltip movement
             ,   headerEnabled = true
         ;
 

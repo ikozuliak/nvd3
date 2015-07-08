@@ -1,5 +1,13 @@
-/* nvd3 version 1.8.1 (https://github.com/novus/nvd3) 2015-06-17 */
-(function(){
+(function (root, factory) {
+  if (typeof define === 'function' && define.amd) {
+    define(['d3'], function (d3) {
+      return (root.nv = factory(d3));
+    });
+  } else {
+    // Browser globals
+    root.nv = factory(d3);
+  }
+}(this, function (d3) {
 
 // set up main nv object
 var nv = {};
@@ -149,6 +157,7 @@ if (typeof(module) !== 'undefined' && typeof(exports) !== 'undefined') {
 if (typeof(window) !== 'undefined') {
   window.nv = nv;
 }
+
 /* Facade for queueing DOM write operations
  * with Fastdom (https://github.com/wilsonpage/fastdom)
  * if available.
@@ -173,7 +182,8 @@ nv.dom.read = function(callback) {
 		return fastdom.read(callback);
 	}
 	return callback();
-};/* Utility class to handle creation of an interactive layer.
+};
+/* Utility class to handle creation of an interactive layer.
  This places a rectangle on top of the chart. When you mouse move over it, it sends a dispatch
  containing the X-coordinate. It can also render a vertical line where the mouse is located.
 
@@ -470,6 +480,7 @@ nv.nearestValueIndex = function (values, searchVal, threshold) {
     });
     return indexToHighlight;
 };
+
 /* Tooltip rendering model for nvd3 charts.
  window.nv.models.tooltip is the updated,new way to render tooltips.
 
@@ -739,6 +750,7 @@ nv.nearestValueIndex = function (values, searchVal, threshold) {
                         // Safari has its own `-webkit-transform` and does not support `transform` 
                         // transform tooltip without transition only in Safari
                         .style('-webkit-transform', new_translate)
+                        .style('-ms-transform', new_translate)
                         .style('opacity', 1);
                 }
 
@@ -903,6 +915,7 @@ nv.nearestValueIndex = function (values, searchVal, threshold) {
     };
 
 })();
+
 
 
 /*
@@ -1542,6 +1555,7 @@ nv.utils.noData = function(chart, container) {
         .text(function(t){ return t; });
 };
 
+
 nv.models.axis = function() {
     "use strict";
 
@@ -1919,6 +1933,7 @@ nv.models.axis = function() {
 
     return chart;
 };
+
 nv.models.boxPlot = function() {
     "use strict";
 
@@ -2231,6 +2246,7 @@ nv.models.boxPlot = function() {
 
     return chart;
 };
+
 nv.models.boxPlotChart = function() {
     "use strict";
 
@@ -2474,6 +2490,7 @@ nv.models.boxPlotChart = function() {
 
     return chart;
 }
+
 // Chart design based on the recommendations of Stephen Few. Implementation
 // based on the work of Clint Ivy, Jamie Love, and Jason Davies.
 // http://projects.instantcognition.com/protovis/bulletchart/
@@ -2709,6 +2726,7 @@ nv.models.bullet = function() {
 
 
 
+
 // Chart design based on the recommendations of Stephen Few. Implementation
 // based on the work of Clint Ivy, Jamie Love, and Jason Davies.
 // http://projects.instantcognition.com/protovis/bulletchart/
@@ -2928,6 +2946,7 @@ nv.models.bulletChart = function() {
 
     return chart;
 };
+
 
 
 
@@ -3154,6 +3173,7 @@ nv.models.candlestickBar = function() {
     nv.utils.initOptions(chart);
     return chart;
 };
+
 
 nv.models.cumulativeLineChart = function() {
     "use strict";
@@ -3814,6 +3834,7 @@ nv.models.cumulativeLineChart = function() {
 
     return chart;
 };
+
 //TODO: consider deprecating by adding necessary features to multiBar model
 nv.models.discreteBar = function() {
     "use strict";
@@ -4066,6 +4087,7 @@ nv.models.discreteBar = function() {
     return chart;
 };
 
+
 nv.models.discreteBarChart = function() {
     "use strict";
 
@@ -4316,6 +4338,7 @@ nv.models.discreteBarChart = function() {
     return chart;
 }
 
+
 nv.models.distribution = function() {
     "use strict";
     //============================================================
@@ -4475,6 +4498,7 @@ nv.models.distribution = function() {
 
     return chart;
 }
+
 nv.models.furiousLegend = function() {
     "use strict";
 
@@ -4813,6 +4837,7 @@ nv.models.furiousLegend = function() {
 
     return chart;
 };
+
 //TODO: consider deprecating and using multibar with single series for this
 nv.models.historicalBar = function() {
     "use strict";
@@ -5044,6 +5069,7 @@ nv.models.historicalBar = function() {
 
     return chart;
 };
+
 
 nv.models.historicalBarChart = function(bar_model) {
     "use strict";
@@ -5456,6 +5482,7 @@ nv.models.candlestickBarChart = function() {
     });
     return chart;
 };
+
 nv.models.legend = function() {
     "use strict";
 
@@ -5828,6 +5855,7 @@ nv.models.legend = function() {
     return chart;
 };
 
+
 nv.models.line = function() {
     "use strict";
     //============================================================
@@ -6056,6 +6084,7 @@ nv.models.line = function() {
 
     return chart;
 };
+
 nv.models.lineChart = function() {
     "use strict";
 
@@ -6457,6 +6486,7 @@ nv.models.lineChart = function() {
 
     return chart;
 };
+
 nv.models.linePlusBarChart = function() {
     "use strict";
 
@@ -6543,6 +6573,12 @@ nv.models.linePlusBarChart = function() {
                 });
         }
     };
+
+    var allDisabled = function(data) {
+      return data.every(function(series) {
+        return series.disabled;
+      });
+    }
 
     function chart(selection) {
         selection.each(function(data) {
@@ -6700,9 +6736,11 @@ nv.models.linePlusBarChart = function() {
                     {values: []}
                 ]);
             var lines2Wrap = g.select('.nv-context .nv-linesWrap')
-                .datum(!dataLines[0].disabled ? dataLines : [
-                    {values: []}
-                ]);
+                .datum(allDisabled(dataLines) ?
+                       [{values: []}] :
+                       dataLines.filter(function(dataLine) {
+                         return !dataLine.disabled;
+                       }));
 
             g.select('.nv-context')
                 .attr('transform', 'translate(0,' + ( availableHeight1 + margin.bottom + margin2.top) + ')');
@@ -6868,9 +6906,10 @@ nv.models.linePlusBarChart = function() {
                 );
 
                 var focusLinesWrap = g.select('.nv-focus .nv-linesWrap')
-                    .datum(dataLines[0].disabled ? [{values:[]}] :
-                        dataLines
-                            .map(function(d,i) {
+                    .datum(allDisabled(dataLines) ? [{values:[]}] :
+                           dataLines
+                           .filter(function(dataLine) { return !dataLine.disabled; })
+                           .map(function(d,i) {
                                 return {
                                     area: d.area,
                                     fillOpacity: d.fillOpacity,
@@ -6919,7 +6958,7 @@ nv.models.linePlusBarChart = function() {
                 g.select('.nv-focus .nv-y1.nv-axis')
                     .style('opacity', dataBars.length ? 1 : 0);
                 g.select('.nv-focus .nv-y2.nv-axis')
-                    .style('opacity', dataLines.length && !dataLines[0].disabled ? 1 : 0)
+                    .style('opacity', dataLines.length && !allDisabled(dataLines) ? 1 : 0)
                     .attr('transform', 'translate(' + x.range()[1] + ',0)');
 
                 g.select('.nv-focus .nv-y1.nv-axis').transition().duration(transitionDuration)
@@ -7068,6 +7107,7 @@ nv.models.linePlusBarChart = function() {
 
     return chart;
 };
+
 nv.models.lineWithFocusChart = function() {
     "use strict";
 
@@ -7618,6 +7658,7 @@ nv.models.lineWithFocusChart = function() {
 
     return chart;
 };
+
 nv.models.multiBar = function() {
     "use strict";
 
@@ -8082,6 +8123,7 @@ nv.models.multiBar = function() {
     return chart;
 };
 
+
 nv.models.multiBarChart = function() {
     "use strict";
 
@@ -8510,6 +8552,7 @@ nv.models.multiBarChart = function() {
     return chart;
 };
 
+
 nv.models.multiBarHorizontal = function() {
     "use strict";
 
@@ -8893,6 +8936,7 @@ nv.models.multiBarHorizontal = function() {
     return chart;
 };
 
+
 nv.models.multiBarHorizontalChart = function() {
     "use strict";
 
@@ -9273,6 +9317,7 @@ nv.models.multiBarHorizontalChart = function() {
 
     return chart;
 };
+
 nv.models.multiChart = function() {
     "use strict";
 
@@ -9661,6 +9706,7 @@ nv.models.multiChart = function() {
     //------------------------------------------------------------
 
     chart.dispatch = dispatch;
+    chart.legend = legend;
     chart.lines1 = lines1;
     chart.lines2 = lines2;
     chart.scatters1 = scatters1;
@@ -9975,6 +10021,7 @@ nv.models.ohlcBar = function() {
     nv.utils.initOptions(chart);
     return chart;
 };
+
 // Code adapted from Jason Davies' "Parallel Coordinates"
 // http://bl.ocks.org/jasondavies/1341281
 nv.models.parallelCoordinates = function() {
@@ -10292,6 +10339,7 @@ nv.models.parallelCoordinates = function() {
     nv.utils.initOptions(chart);
     return chart;
 };
+
 nv.models.pie = function() {
     "use strict";
 
@@ -10708,6 +10756,7 @@ nv.models.pie = function() {
     nv.utils.initOptions(chart);
     return chart;
 };
+
 nv.models.pieChart = function() {
     "use strict";
 
@@ -10956,6 +11005,7 @@ nv.models.pieChart = function() {
     return chart;
 };
 
+
 nv.models.scatter = function() {
     "use strict";
 
@@ -11184,9 +11234,9 @@ nv.models.scatter = function() {
                     if (clipVoronoi) {
                         // voronoi sections are already set to clip,
                         // just create the circles with the IDs they expect
-                        wrap.select('.nv-point-clips').selectAll('clipPath').remove();
-                        wrap.select('.nv-point-clips').selectAll("clipPath")
-                            .data(vertices)
+                        wrap.select('.nv-point-clips').selectAll('*').remove(); // must do * since it has sub-dom
+                        var pointClips = wrap.select('.nv-point-clips').selectAll('clipPath').data(vertices);
+                        var vPointClips = pointClips
                             .enter().append("svg:clipPath")
                             .attr("id", function(d, i) { return "nv-clip-"+id+"-"+i;})
                             .append("svg:circle")
@@ -11473,6 +11523,7 @@ nv.models.scatter = function() {
     nv.utils.initOptions(chart);
     return chart;
 };
+
 
 nv.models.scatterChart = function() {
     "use strict";
@@ -11878,6 +11929,7 @@ nv.models.scatterChart = function() {
     return chart;
 };
 
+
 nv.models.sparkline = function() {
     "use strict";
 
@@ -12005,6 +12057,7 @@ nv.models.sparkline = function() {
     nv.utils.initOptions(chart);
     return chart;
 };
+
 
 nv.models.sparklinePlus = function() {
     "use strict";
@@ -12212,6 +12265,7 @@ nv.models.sparklinePlus = function() {
 
     return chart;
 };
+
 
 nv.models.stackedArea = function() {
     "use strict";
@@ -12537,6 +12591,7 @@ nv.models.stackedArea = function() {
 
     return chart;
 };
+
 
 nv.models.stackedAreaChart = function() {
     "use strict";
@@ -13085,6 +13140,7 @@ nv.models.stackedAreaChart = function() {
 
     return chart;
 };
+
 // based on http://bl.ocks.org/kerryrodden/477c1bfb081b783f80ad
 nv.models.sunburst = function() {
     "use strict";
@@ -13290,6 +13346,7 @@ nv.models.sunburst = function() {
     nv.utils.initOptions(chart);
     return chart;
 };
+
 nv.models.sunburstChart = function() {
     "use strict";
 
@@ -13431,5 +13488,6 @@ nv.models.sunburstChart = function() {
     return chart;
 };
 
-nv.version = "1.8.1";
-})();
+return nv;
+
+}));

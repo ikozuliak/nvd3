@@ -156,19 +156,21 @@ nv.models.multiBarChart = function() {
 
             // Legend
             if (showLegend) {
-                legend.width(availableWidth - controlWidth());
+                legend.width(availableWidth);
 
                 g.select('.nv-legendWrap')
-                    .datum(data)
-                    .call(legend);
+                  .datum(data)
+                  .call(legend);
 
-                if ( margin.top != legend.height()) {
-                    margin.top = legend.height();
+
+                if ( margin.bottom != legend.height()) {
+                    margin.bottom = legend.height() + 40;
                     availableHeight = nv.utils.availableHeight(height, container, margin);
                 }
 
-                g.select('.nv-legendWrap')
-                    .attr('transform', 'translate(' + controlWidth() + ',' + (-margin.top) +')');
+                wrap.select('.nv-legendWrap')
+                  .attr('transform', 'translate('+0+',' + (this.clientHeight - margin.bottom + 10 ) +')');
+
             }
 
             // Controls

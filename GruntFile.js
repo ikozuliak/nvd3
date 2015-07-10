@@ -19,22 +19,40 @@ module.exports = function(grunt) {
             },
             js: {
                 options: {
-                    separator: '',
-                    banner: '/* nvd3 version ' + _pkg.version + ' (' + _pkg.url + ') ' +
-                        '<%= grunt.template.today("yyyy-mm-dd") %> */\n' + '(function(){\n',
-                    footer: '\nnv.version = "' + _pkg.version + '";\n})();'
+                    //separator: '',
+                    //banner: '/* nvd3 version ' + _pkg.version + ' (' + _pkg.url + ') ' +
+                    //    '<%= grunt.template.today("yyyy-mm-dd") %> */\n' + '(function(){\n',
+                    //footer: '\nnv.version = "' + _pkg.version + '";\n})();'
                 },
                 src: [
+                    'src/intro.js',
+
                     'src/core.js',
                     'src/dom.js',
                     'src/interactiveLayer.js',
                     'src/tooltip.js',
                     'src/utils.js',
-                    //Include all files in src/models
-                    'src/models/*.js'
+
+                    //Include only needed files
+                    'src/models/axis.js',
+                    'src/models/pie.js',
+                    'src/models/distribution.js',
+                    'src/models/legend.js',
+                    'src/models/line.js',
+                    'src/models/scatter.js',
+                    'src/models/sparkline.js',
+
+                    'src/models/doublePie.js',
+                    'src/models/lineChart.js',
+                    'src/models/multiBar.js',
+                    'src/models/multiBarChart.js',
+                    'src/models/scatterChart.js',
+                    'src/models/scatterSectorsChart.js',
+
+                    'src/outro.js'
                     // example to exclude files: '!src/models/excludeMe*'
                      ],
-                dest: 'build/nv.d3.js'
+                dest: '../pee/vendor/assets/javascripts/nvd3.js'
             }
         },
         uglify: {
@@ -92,7 +110,7 @@ module.exports = function(grunt) {
             unit: {
                 options: {
                     logLevel: 'ERROR',
-                    browsers: ['Firefox'],
+                    browsers: ['Chrome'],
                     frameworks: [ 'mocha', 'sinon-chai' ],
                     reporters: [ 'spec', 'junit', 'coverage'],
                     singleRun: true,

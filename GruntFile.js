@@ -32,8 +32,22 @@ module.exports = function(grunt) {
                     'src/interactiveLayer.js',
                     'src/tooltip.js',
                     'src/utils.js',
-                    //Include all files in src/models
-                    'src/models/*.js',
+
+                    //Include only needed files
+                    'src/models/axis.js',
+                    'src/models/pie.js',
+                    'src/models/distribution.js',
+                    'src/models/legend.js',
+                    'src/models/line.js',
+                    'src/models/scatter.js',
+                    'src/models/sparkline.js',
+
+                    'src/models/doublePie.js',
+                    'src/models/lineChart.js',
+                    'src/models/multiBar.js',
+                    'src/models/multiBarChart.js',
+                    'src/models/scatterChart.js',
+                    'src/models/scatterSectorsChart.js',
 
                     'src/outro.js'
                     // example to exclude files: '!src/models/excludeMe*'

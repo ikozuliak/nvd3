@@ -160,7 +160,7 @@ nv.models.legend = function () {
                   return 'translate(' + xpos + ',' + ypos + ')';
               });
 
-            height = margin.top + margin.bottom + ypos;
+          height = margin.top + margin.bottom + ypos;
 
         });
 

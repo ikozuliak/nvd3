@@ -11,6 +11,7 @@ nv.models.doublePie = function () {
     , width = null
     , height = null
     , single = false
+    , showLegend = true
     , total = {}
     , title = ''
     , tooltips = true
@@ -22,7 +23,6 @@ nv.models.doublePie = function () {
     , defaultState = null
     , noData = "No Data Available."
     , dispatch = d3.dispatch('tooltipShow', 'tooltipHide', 'stateChange', 'changeState');
-
 
   function chart(selection) {
     selection.each(function (data) {
@@ -40,22 +40,45 @@ nv.models.doublePie = function () {
       });
 
       var availableWidth = (width || parseInt(container.style('width')) || 960) - margin.left
-        , availableHeight = (height || parseInt(container.style('height')) || 400) - margin.bottom
-        , pieInnerRatio = 0.6
+        , wrap = container.selectAll('g.nv-wrap.nv-pieChart').data([data])
+        , availableHeight = (height || parseInt(container.style('height')) || 400) - margin.bottom;
+
+      var  gEnter = wrap.enter().append('g').attr('class', 'nvd3 nv-wrap nv-pieChart').append('g')
+        , g = wrap.select('g')
+        , labels = gEnter.append('g').attr('class', 'nv-arcLabels')
+        , legendWrap = gEnter.append('g').attr('class', 'nv-legendWrap');
+
+      // Legend
+      if (showLegend) {
+        var legendWidth = availableWidth;
+
+        legend.width(legendWidth);
+
+        g.select('.nv-legendWrap')
+          .datum(data)
+          .call(legend);
+
+        if ( margin.bottom != legend.height()) {
+          margin.bottom = legend.height();
+          availableHeight = nv.utils.availableHeight(height, container, margin);
+        }
+
+        wrap.select('.nv-legendWrap')
+          .attr('transform', 'translate('+(legendWidth - g.select('.nv-legendWrap').node().getBBox().width)/2 +',' + (this.clientHeight - legend.height() - 10 ) +')');
+
+      }
+
+      var pieInnerRatio = 0.6
         , pieInnerWidth = availableWidth * pieInnerRatio
         , pieInnerHeight = availableHeight * pieInnerRatio
         , halfHeight = availableHeight / 2
         , halfWidth = availableWidth / 2
         , PI = (Math.PI / 180)
-        , arcRadius = halfHeight - (halfHeight / 7);
-
-      var wrap = container.selectAll('g.nv-wrap.nv-pieChart').data([data])
-        , gEnter = wrap.enter().append('g').attr('class', 'nvd3 nv-wrap nv-pieChart').append('g')
-        , g = wrap.select('g')
-        , labels = gEnter.append('g').attr('class', 'nv-arcLabels')
+        , arcRadius = halfHeight - (halfHeight / 7)
         , arcGroup = wrap.selectAll('.nv-arcLabels').attr("transform", "translate(" + halfWidth + "," + halfHeight + ")");
 
-      gEnter.append('g').attr('class', 'nv-legendWrap');
+      chart.update = function() { container.transition().call(chart); };
+
 
       if (title) {
 
@@ -89,32 +112,21 @@ nv.models.doublePie = function () {
       }
 
       var slices = wrap.selectAll('.nv-slice')
+      var hoverTimeout;
 
       slices.on('mouseover', function (e, i) {
 
-        var pos = {"left":0, "top": 0};
+        var pos = {"left":0, "top": single ? -40 : 0};
+        var pointIndex = single ? i : i % (slices[0].length / 2);
 
         e.data.series = [1];
         e.data.total = total;
-
-        tooltip();
 
         tooltip
           .chartContainer(that.parentNode)
           .position(pos)
           .data(e.data)
           .hidden(false);
-
-        pie.dispatch.elementMouseover({
-          pointIndex: single ? i : i % (slices[0].length / 2),
-        });
-
-      });
-
-      var hoverTimeout;
-
-
-      pie.dispatch.on('elementMouseover', function (e) {
 
         clearTimeout(hoverTimeout);
 
@@ -123,15 +135,15 @@ nv.models.doublePie = function () {
 
         wrap
           .selectAll(
-          '.nv-pieWrap .nv-slice:nth-of-type('+(e.pointIndex+1)+'), ' +
-          '.nv-pieWrapInner .nv-slice:nth-of-type('+(e.pointIndex+1)+')'
+          '.nv-pieWrap .nv-slice:nth-of-type('+(pointIndex+1)+'), ' +
+          '.nv-pieWrapInner .nv-slice:nth-of-type('+(pointIndex+1)+')'
         )
           .classed('hovered', true)
           .classed('gray', false)
 
       });
 
-      pie.dispatch.on('elementMouseout', function (e) {
+      slices.on('mouseout', function (e, i) {
 
         clearTimeout(hoverTimeout);
 
@@ -186,15 +198,15 @@ nv.models.doublePie = function () {
           .style("fill", '#8291a1')
 
         arcGroup.select('.nv-arcTextOuter')
-          .attr("x", -halfWidth)
+          .attr("x", -halfHeight)
           .attr("y", -availableHeight / 2.5);
 
         arcGroup.select(".nv-arcLineOuter")
           .attr("transform", function (d) {
             return "translate(" + arc.centroid(d) + ")";
           })
-          .attr("x2", -pieInnerWidth / 10)
-          .attr("y2", -pieInnerWidth / 10)
+          .attr("x2", -pieInnerHeight / 15)
+          .attr("y2", -pieInnerHeight / 15);
 
         pie
           .donut(true)
@@ -256,7 +268,7 @@ nv.models.doublePie = function () {
 
         arcGroup
           .select('.nv-arcTextInner')
-          .attr("x", halfWidth)
+          .attr("x", halfHeight)
           .attr("y", -availableHeight / 2.5);
 
         arcGroup
@@ -264,15 +276,17 @@ nv.models.doublePie = function () {
           .attr("transform", function (d) {
             return "translate(" + arcInner.centroid(d) + ")";
           })
-          .attr("x2", pieInnerWidth / 5)
-          .attr("y2", -pieInnerWidth / 5)
+          .attr("x2", pieInnerHeight / 4)
+          .attr("y2", -pieInnerHeight / 4)
 
         d3.transition(pieWrapInner).call(pieInner);
       }
-
-      legend.dispatch.on('stateChange', function (newState) {
-        state = newState;
+      legend.dispatch.on('stateChange', function(newState) {
+        for (var key in newState) {
+          state[key] = newState[key];
+        }
         dispatch.stateChange(state);
+        chart.update();
       });
 
     });
@@ -297,6 +311,8 @@ nv.models.doublePie = function () {
     // simple options, just get/set the necessary values
     noData:         {get: function(){return noData;},         set: function(_){noData=_;}},
     showLegend:     {get: function(){return showLegend;},     set: function(_){showLegend=_;}},
+    single:         {get: function(){return single;},     set: function(_){single=_;}},
+    title:          {get: function(){return title;},          set: function(_){title=_;}},
     legendPosition: {get: function(){return legendPosition;}, set: function(_){legendPosition=_;}},
     defaultState:   {get: function(){return defaultState;},   set: function(_){defaultState=_;}},
 

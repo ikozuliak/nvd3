@@ -333,6 +333,7 @@ nv.models.doublePie = function () {
       color = _;
       legend.color(color);
       pie.color(color);
+      pieInner.color(color);
     }},
     duration: {get: function(){return duration;}, set: function(_){
       duration = _;

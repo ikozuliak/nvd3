@@ -156,21 +156,10 @@ nv.models.multiBarChart = function() {
 
             // Legend
             if (showLegend) {
-                legend.width(availableWidth);
+                nv.utils.showLegend.call(this, legend, container, data, availableWidth);
 
-                g.select('.nv-legendWrap')
-                  .datum(data)
-                  .call(legend);
-
-
-                if ( margin.bottom != legend.height()) {
-                    margin.bottom = legend.height() + 40;
-                    availableHeight = nv.utils.availableHeight(height, container, margin);
-                }
-
-                wrap.select('.nv-legendWrap')
-                  .attr('transform', 'translate('+0+',' + (this.clientHeight - margin.bottom + 10 ) +')');
-
+                margin.bottom = legend.height() + 40;
+                availableHeight = nv.utils.availableHeight(height, container, margin);
             }
 
             // Controls

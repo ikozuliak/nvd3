@@ -183,6 +183,17 @@ nv.models.lineChart = function() {
                     .attr('transform', 'translate(0,' + y.range()[0] + ')');
                 g.select('.nv-x.nv-axis')
                     .call(xAxis);
+
+                var xTicks = g.select('.nv-x.nv-axis > g').selectAll('g');
+
+                xTicks
+                  .selectAll('line, text')
+                  .style('opacity', 1)
+                  .filter(function(d,i) {
+                      return i % Math.ceil(data[0].values.length / (availableWidth / 60)) !== 0;
+                  })
+                  .selectAll('text, line')
+                  .style('opacity', 0);
             }
 
             if (showYAxis) {

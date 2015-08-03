@@ -636,3 +636,22 @@ nv.utils.noData = function(chart, container) {
         .attr('y', y)
         .text(function(t){ return t; });
 };
+
+nv.utils.showLegend = function(legend, container, data, availableWidth, isCentered) {
+    var svgRect         = this.getBoundingClientRect();
+    var svgRectHeight   = svgRect.bottom - svgRect.top;
+    var legendWrap      = container.select('.nv-legendWrap');
+
+    legend.width(availableWidth);
+
+    legendWrap
+      .datum(data)
+      .call(legend);
+
+    var marginLeft    = isCentered ? (availableWidth - container.select('.nv-legendWrap').node().getBBox().width)/2 : 0;
+    var marginTop     = svgRectHeight - legend.height() - 30;
+
+    container
+      .select('.nv-legendWrap')
+      .attr('transform', 'translate('+ marginLeft +',' + marginTop +')');
+};

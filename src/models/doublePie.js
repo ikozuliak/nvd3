@@ -50,22 +50,10 @@ nv.models.doublePie = function () {
 
       // Legend
       if (showLegend) {
-        var legendWidth = availableWidth;
+        nv.utils.showLegend.call(this, legend, container, data, availableWidth, true);
 
-        legend.width(legendWidth);
-
-        g.select('.nv-legendWrap')
-          .datum(data)
-          .call(legend);
-
-        if ( margin.bottom != legend.height()) {
-          margin.bottom = legend.height();
-          availableHeight = nv.utils.availableHeight(height, container, margin);
-        }
-
-        wrap.select('.nv-legendWrap')
-          .attr('transform', 'translate('+(legendWidth - g.select('.nv-legendWrap').node().getBBox().width)/2 +',' + (this.clientHeight - legend.height() - 10 ) +')');
-
+        margin.bottom = legend.height() + 40;
+        availableHeight = nv.utils.availableHeight(height, container, margin);
       }
 
       var pieInnerRatio = 0.6

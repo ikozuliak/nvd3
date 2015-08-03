@@ -135,21 +135,10 @@ nv.models.lineChart = function() {
 
             // Legend
             if (showLegend) {
-                legend.width(availableWidth);
+                nv.utils.showLegend.call(this, legend, container, data, availableWidth);
 
-                g.select('.nv-legendWrap')
-                    .datum(data)
-                    .call(legend);
-
-
-                if ( margin.bottom != legend.height()) {
-                    margin.bottom = legend.height() + 40;
-                    availableHeight = nv.utils.availableHeight(height, container, margin);
-                }
-
-                wrap.select('.nv-legendWrap')
-                    .attr('transform', 'translate('+0+',' + (this.clientHeight - margin.bottom + 10 ) +')');
-
+                margin.bottom = legend.height() + 40;
+                availableHeight = nv.utils.availableHeight(height, container, margin);
             }
 
             wrap.attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
@@ -194,6 +183,17 @@ nv.models.lineChart = function() {
                     .attr('transform', 'translate(0,' + y.range()[0] + ')');
                 g.select('.nv-x.nv-axis')
                     .call(xAxis);
+
+                var xTicks = g.select('.nv-x.nv-axis > g').selectAll('g');
+
+                xTicks
+                  .selectAll('line, text')
+                  .style('opacity', 1)
+                  .filter(function(d,i) {
+                      return i % Math.ceil(data[0].values.length / (availableWidth / 60)) !== 0;
+                  })
+                  .selectAll('text, line')
+                  .style('opacity', 0);
             }
 
             if (showYAxis) {

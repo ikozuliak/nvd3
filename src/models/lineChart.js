@@ -173,10 +173,12 @@ nv.models.lineChart = function() {
 
             // Setup Axes
             if (showXAxis) {
+
+                var skipTick = Math.ceil(data[0].values.length / (availableWidth / 65));
+
                 xAxis
                   .showMaxMin(false)
                     .scale(x)
-                    ._ticks(nv.utils.calcTicksX(availableWidth/100, data) )
                     .tickSize(-availableHeight, 0);
 
                 g.select('.nv-x.nv-axis')
@@ -192,7 +194,7 @@ nv.models.lineChart = function() {
 
                 xTicks
                   .filter(function(d,i) {
-                      return i % Math.ceil(data[0].values.length / (availableWidth / 65)) !== 0;
+                      return i % skipTick !== 0;
                   })
                   .selectAll('text')
                   .style('opacity', 0);

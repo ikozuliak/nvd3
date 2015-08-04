@@ -163,9 +163,8 @@ nv.models.lineChart = function() {
                 .width(availableWidth)
                 .height(availableHeight)
                 .color(data.map(function(d,i) {
-                    return d.color || color(d, i);
+                    return color(d, i);
                 }).filter(function(d,i) { return !data[i].disabled }));
-
 
             var linesWrap = g.select('.nv-linesWrap')
                 .datum(data.filter(function(d) { return !d.disabled }));
@@ -175,6 +174,7 @@ nv.models.lineChart = function() {
             // Setup Axes
             if (showXAxis) {
                 xAxis
+                  .showMaxMin(false)
                     .scale(x)
                     ._ticks(nv.utils.calcTicksX(availableWidth/100, data) )
                     .tickSize(-availableHeight, 0);
@@ -184,15 +184,17 @@ nv.models.lineChart = function() {
                 g.select('.nv-x.nv-axis')
                     .call(xAxis);
 
-                var xTicks = g.select('.nv-x.nv-axis > g').selectAll('g');
+                var xTicks = g.select('.nv-x.nv-axis > g').selectAll('.tick');
 
                 xTicks
-                  .selectAll('line, text')
-                  .style('opacity', 1)
+                  .selectAll('text')
+                  .style('opacity', 1);
+
+                xTicks
                   .filter(function(d,i) {
-                      return i % Math.ceil(data[0].values.length / (availableWidth / 60)) !== 0;
+                      return i % Math.ceil(data[0].values.length / (availableWidth / 65)) !== 0;
                   })
-                  .selectAll('text, line')
+                  .selectAll('text')
                   .style('opacity', 0);
             }
 
